@@ -1,10 +1,10 @@
 """
-This is a skeleton file that can serve as a starting point for a Python
+This is a core file that can serve as a starting point for a Python
 console script. To run this script uncomment the following lines in the
 ``[options.entry_points]`` section in ``setup.cfg``::
 
     console_scripts =
-         fibonacci = traintracker.skeleton:run
+         fibonacci = traintracker.core:run
 
 Then run ``pip install .`` (or ``pip install -e .`` for editable mode)
 which will install the command ``fibonacci`` inside your current environment.
@@ -36,7 +36,7 @@ _logger = logging.getLogger(__name__)
 # ---- Python API ----
 # The functions defined in this section can be imported by users in their
 # Python scripts/interactive interpreter, e.g. via
-# `from traintracker.skeleton import fib`,
+# `from traintracker.core import fib`,
 # when using this Python module as a library.
 
 
@@ -144,6 +144,6 @@ if __name__ == "__main__":
     # After installing your project with pip, users can also run your Python
     # modules as scripts via the ``-m`` flag, as defined in PEP 338::
     #
-    #     python -m traintracker.skeleton 42
+    #     python -m traintracker.core 42
     #
     run()
