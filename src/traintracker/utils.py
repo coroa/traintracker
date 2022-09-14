@@ -1,7 +1,9 @@
 import arrow
 
+
 def as_time(s):
     return arrow.get(s).to("Europe/Berlin")
+
 
 def flatten_dict(di: dict, sep: str = "_"):
     def flatten(it, prefix="", sep="_"):
@@ -32,10 +34,10 @@ def fields_from_schema(schema, sep="_"):
     return flatten(schema)
 
 
-def placeholders(l, named=False):
+def placeholders(li, named=False):
     if named:
-        if isinstance(l, dict):
-            l = l.keys()
-        return ",".join(f":{k}" for k in l)
+        if isinstance(li, dict):
+            li = li.keys()
+        return ",".join(f":{k}" for k in li)
     else:
-        return ",".join(["?"] * len(l))
+        return ",".join(["?"] * len(li))

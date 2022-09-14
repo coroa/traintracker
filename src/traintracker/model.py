@@ -2,10 +2,10 @@ from typing import Optional
 import datetime
 import requests
 from pydantic import BaseModel
-from rich import print
 from rich.markup import escape
 
 from .const import API_PREFIX
+
 
 class Station(BaseModel):
     id: int
@@ -47,12 +47,14 @@ def resolve_station(station: str, cls=Station):
             return cls(id=number, name=name)
         case [*_]:
             raise ResolveError(
-                f"[bold red]ERROR[/]  Multiple stations found for [bold yellow]{escape(station)}[/]: ",
+                "[bold red]ERROR[/]  Multiple stations found for "
+                f"[bold yellow]{escape(station)}[/]: ",
                 {r["name"]: r["evaNumber"] for r in results},
             )
         case []:
             raise ResolveError(
-                f"[bold red]ERROR[/]  No station found for [bold yellow]{escape(station)}[/]"
+                "[bold red]ERROR[/]  No station found for "
+                f"[bold yellow]{escape(station)}[/]"
             )
         case _:
             raise ResolveError("No matches")

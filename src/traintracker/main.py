@@ -1,20 +1,19 @@
 """
 """
 
+from .model import Departure, ResolveError, Station, Message
+from .utils import fields_from_schema, flatten_dict, placeholders, as_time
+from .const import API_PREFIX
+
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import requests
 import typer
-import arrow
 from rich import print
 from sqlite3 import Connection
 
 _logger = logging.getLogger(__name__)
-
-from .model import Departure, ResolveError, Station, Message
-from .utils import fields_from_schema, flatten_dict, placeholders, as_time
-from .const import API_PREFIX
 
 
 def departures_to_sqlite(
@@ -105,7 +104,9 @@ def request_departures(station: Station, warn_about_following_trains=True):
         ]
 
     if warn_about_following_trains and response.get("departures"):
-        print(f":warning: [bold red]Further trains planned for today for {station.name}")
+        print(
+            f":warning: [bold red]Further trains planned for today for {station.name}"
+        )
 
     return trains
 
@@ -123,7 +124,8 @@ def main(
     table: str = typer.Option("trains", "--table", "-t", help="Table to append to"),
 ):
     """
-    Grab all trains and delays that passed through the given stations and add them to `table` in `db_file`
+    Grab all trains and delays that passed through the given stations and add them to
+    `table` in `db_file`
     """
     try:
         stations = [Station.from_search(station) for station in stations]
@@ -131,7 +133,7 @@ def main(
         print(*e.args)
         raise typer.Exit()
 
-    print(f"Found [green]all[/green] stations:", stations)
+    print("Found [green]all[/green] stations:", stations)
 
     with ThreadPoolExecutor() as exec:
         departures = sum(exec.map(request_departures, stations), [])
