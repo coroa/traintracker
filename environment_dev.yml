@@ -1,0 +1,27 @@
+name: traintracker
+dependencies:
+  - python
+  - arrow
+  - sqlite
+  - pydantic
+  - rich
+  - typer
+  - requests
+
+
+  # dev
+  - black
+  - pylint
+  - flake8
+  - tox
+  - sphinx
+  - setuptools-scm
+  - pytest
+  - pytest-cov
+  - pre-commit
+  - ipykernel
+
+
+  - pip
+  - pip:
+    - -e .

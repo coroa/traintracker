@@ -1,0 +1,12 @@
+name: traintracker
+dependencies:
+  - python
+  - arrow
+  - sqlite
+  - pydantic
+  - rich
+  - typer
+  - requests
+  - pip
+  - pip:
+    - -e .
