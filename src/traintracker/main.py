@@ -4,6 +4,7 @@
 from .model import Departure, ResolveError, Station, Message
 from .utils import fields_from_schema, flatten_dict, placeholders, as_time
 from .const import API_PREFIX
+import arrow
 
 import logging
 from concurrent.futures import ThreadPoolExecutor
@@ -30,6 +31,8 @@ def departures_to_sqlite(
     if not departures:
         return
 
+    sixhoursago = arrow.now().shift(hours=-6)
+
     fields = list(fields_from_schema(Departure.schema()))
     cur.execute(
         'CREATE TABLE IF NOT EXISTS "{table}"({fields})'.format(
@@ -43,8 +46,9 @@ def departures_to_sqlite(
         cur.execute(
             f'DELETE FROM "{table}" WHERE '
             f"date IN ({placeholders(dates)}) AND "
-            f"station_name IN ({placeholders(stations)})",
-            tuple(dates) + tuple(stations),
+            f"station_name IN ({placeholders(stations)}) AND "
+            f"actual_time > ?",
+            tuple(dates) + tuple(stations) + (sixhoursago.datetime,),
         )
 
     defaults = {
@@ -52,7 +56,11 @@ def departures_to_sqlite(
         "message_value": None,
         "message_text": None,
     }
-    data = [defaults | flatten_dict(d.dict()) for d in departures]
+    data = [
+        defaults | flatten_dict(d.dict())
+        for d in departures
+        if d.actual_time > sixhoursago
+    ]
     cur.executemany(
         f'INSERT INTO "{table}" VALUES({placeholders(fields, named=True)})', data
     )
@@ -87,11 +95,11 @@ def decompose_departure(station, date, d):
     )
 
 
-def request_departures(station: Station, warn_about_following_trains=True):
+def request_departures(station: Station):
     # get all previous trains for the day (the station is cached)
     res = requests.get(
         f"{API_PREFIX}/iris/v2/abfahrten/{station.id}",
-        params=dict(lookahead=90, lookbehind=1440),
+        params=dict(lookahead=0, lookbehind=7 * 60),
     )
     res.raise_for_status()
 
@@ -103,10 +111,10 @@ def request_departures(station: Station, warn_about_following_trains=True):
             decompose_departure(station, day, d) for d in departures if "departure" in d
         ]
 
-    if warn_about_following_trains and response.get("departures"):
-        print(
-            f":warning: [bold red]Further trains planned for today for {station.name}"
-        )
+    # if warn_about_following_trains and response.get("departures"):
+    #     print(
+    #         f":warning: [bold red]Further trains planned for today for {station.name}"
+    #     )
 
     return trains
 
