@@ -31,7 +31,7 @@ def departures_to_sqlite(
     if not departures:
         return
 
-    sixhoursago = arrow.now().shift(hours=-6)
+    sixhoursago = arrow.now().shift(hours=-6, minutes=-30)
 
     fields = list(fields_from_schema(Departure.schema()))
     cur.execute(
