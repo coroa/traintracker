@@ -1,5 +1,6 @@
-from typing import Optional
 import datetime
+from typing import Optional
+
 import requests
 from pydantic import BaseModel
 from rich.markup import escape

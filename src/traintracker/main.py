@@ -1,18 +1,19 @@
 """
 """
 
-from .model import Departure, ResolveError, Station, Message
-from .utils import fields_from_schema, flatten_dict, placeholders, as_time
-from .const import API_PREFIX
-import arrow
-
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from sqlite3 import Connection
+
+import arrow
 import requests
 import typer
 from rich import print
-from sqlite3 import Connection
+
+from .const import API_PREFIX
+from .model import Departure, Message, ResolveError, Station
+from .utils import as_time, fields_from_schema, flatten_dict, placeholders
 
 _logger = logging.getLogger(__name__)
 
